@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification Dashboard</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --secondary-color: #283593; 
+      --highlight-color: #FFC107;
+      --background-color: #ECEFF1; 
+      --white: #FFFFFF;
+      --shadow-color: rgba(0, 0, 0, 0.15);
+    }
+  
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      overflow-x: hidden;
+    }
+  
+    .sidebar {
+      background: var(--secondary-color);
+      color: var(--white); 
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 6px var(--shadow-color);
+      animation: slideIn 0.5s ease-out;
+    }
+  
+    .sidebar h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 2px 2px 4px var(--shadow-color);
+    }
+  
+    .sidebar a {
+      color: var(--white);
+      text-decoration: none;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      padding: 12px;
+      border-radius: 12px;
+      display: block;
+      text-align: center;
+      transition: transform 0.3s, background-color 0.3s;
+    }
+  
+    .sidebar a:hover {
+      background-color: var(--highlight-color);
+      transform: scale(1.05);
+    }
+  
+    .sidebar a.active {
+      background-color: var(--highlight-color);
+      font-weight: bold;
+      transform: scale(1.1);
+    }
+  
+    .container {
+      margin-left: 270px;
+      padding: 40px;
+      max-width: 900px;
+      animation: fadeIn 0.6s ease-in;
+    }
+  
+    h2 {
+      color: var(--secondary-color);
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+      position: relative;
+      display: inline-block;
+    }
+  
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background-color: var(--highlight-color); /
+    }
+  
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: var(--secondary-color); 
+    }
+  
+    input, textarea, button {
+      width: 100%;
+      margin-bottom: 20px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 8px var(--shadow-color);
+      transition: transform 0.3s;
+    }
+  
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--highlight-color);
+      transform: translateY(-2px);
+    }
+  
+    button {
+      background-color: var(--primary-color); 
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  
+    button:hover {
+      background-color: var(--secondary-color); 
+      transform: scale(1.05);
+    }
+  
+    button:active {
+      background-color: var(--highlight-color); 
+      transform: scale(0.95);
+    }
+  
+    @keyframes slideIn {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+  
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+  
+</head>
+<body>
+  <div class="sidebar">
+    <h1>Dashboard</h1>
+    <a href="dumpy.html" class="active">Home</a>
+    <a href="dumpy2.html">All Notifications</a>
+  </div>
+
+  <div class="container">
+    <h2>Upload Notification</h2>
+    <form id="notificationForm">
+      <label for="title">Notification Title</label>
+      <input type="text" id="title" placeholder="Enter the title" required />
+
+      <label for="details">Notification Details</label>
+      <textarea id="details" placeholder="Enter the details" required></textarea>
+
+      <label for="pdfUpload">Upload PDF (Optional)</label>
+      <input type="file" id="pdfUpload" accept="application/pdf" />
+        <label for="formname">Form</label>
+        <input type="text" id="formname" placeholder="caste/formal/student" required/>
+      <button type="submit">Upload</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('notificationForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('title').value;
+      const details = document.getElementById('details').value;
+      const pdfUpload = document.getElementById('pdfUpload').files[0];
+      const formname=document.getElementById('formname').value;
+
+      let pdfBase64 = null;
+
+      if (pdfUpload) {
+        pdfBase64 = await toBase64(pdfUpload); 
+      }
+
+      const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+      notifications.push({ title, details, pdfBase64,formname });
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+
+      alert('Notification uploaded successfully!');
+      form.reset();
+    });
+
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
